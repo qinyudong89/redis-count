@@ -12,6 +12,7 @@ import org.springframework.util.Assert;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
@@ -178,6 +179,16 @@ public class RedisUilt {
      */
     public boolean hexists(String key, String field) {
         return redisTemplate.opsForHash().hasKey(key, field);
+    }
+
+    /**
+     *
+     * @param key
+     * @param scanOptions
+     * @return
+     */
+    public Cursor<Map.Entry<Object, Object>> hscan(String key, ScanOptions scanOptions){
+        return redisTemplate.opsForHash().scan(key, scanOptions);
     }
 
     /**----------------------------List相关操作----------------------------*/
