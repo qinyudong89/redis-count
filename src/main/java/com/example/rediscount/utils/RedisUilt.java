@@ -22,6 +22,10 @@ public class RedisUilt {
     @Autowired
     private RedisTemplate redisTemplate;
 
+    public void del(String key){
+        redisTemplate.delete(key);
+    }
+
     /**----------------------------String相关操作----------------------------*/
 
     /**
@@ -166,7 +170,7 @@ public class RedisUilt {
      * @param key
      * @param fields
      */
-    public void hdel(String key, String... fields) {
+    public void hdel(String key, Object... fields) {
         redisTemplate.opsForHash().delete(key, fields);
     }
 
@@ -233,16 +237,13 @@ public class RedisUilt {
     }
 
     /**
-     * 删除集合中值等于value得元素
-     *
+     * 渐进式的删除列表元素
      * @param key
-     * @param index index=0, 删除所有值等于value的元素; index>0, 从头部开始删除第一个值等于value的元素;
-     *              index<0, 从尾部开始删除第一个值等于value的元素;
-     * @param value
-     * @return
+     * @param start
+     * @param count 删除元素个数
      */
-    public Long lrem(String key, long index, String value) {
-        return redisTemplate.opsForList().remove(key, index, value);
+    public void lrem(String key, long start, long count) {
+        redisTemplate.opsForList().trim(key, start, count);
     }
 
     /**
@@ -255,6 +256,15 @@ public class RedisUilt {
      */
     public List<String> lrange(String key, long start, long end) {
         return redisTemplate.opsForList().range(key, start, end);
+    }
+
+    /**
+     * 获取key个数
+     * @param key
+     * @return
+     */
+    public long llen(String key){
+        return redisTemplate.opsForList().size(key);
     }
 
     /**----------------------------Set相关操作----------------------------*/
@@ -335,6 +345,16 @@ public class RedisUilt {
      */
     public Set<Object> sDifference(String key, Collection<String> otherKeys) {
         return redisTemplate.opsForSet().difference(key, otherKeys);
+    }
+
+    /**
+     *
+     * @param key
+     * @param scanOptions
+     * @return
+     */
+    public Cursor<Object> sscan(String key, ScanOptions scanOptions){
+        return redisTemplate.opsForSet().scan(key, scanOptions);
     }
 
     /**------------------zSet相关操作--------------------------------*/
